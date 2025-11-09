@@ -1,8 +1,11 @@
 import * as THREE from 'three';
 import gsap from 'gsap';
-
+import { GLTFLoader } from 'three/examples/jsm/Addons.js';
 // aspect ration of A4 paper is sqrRoot(2) : 1
 // which is approximatelly 1.414:1
+let boat;
+let mixer;
+const clock = new THREE.Clock();
 function createPaper(size, options = {}) {
 	const {
 		segments = 10,
@@ -13,7 +16,7 @@ function createPaper(size, options = {}) {
 	} = options;
 
 	const geom = new THREE.PlaneGeometry(size, size * A4size, segments, segments);
-	const mat = new THREE.MeshBasicMaterial({
+	const mat = new THREE.MeshPhongMaterial({
 		color: paperColor,
 		side: THREE.DoubleSide,
 	});
@@ -108,14 +111,41 @@ function foldPaper(paper, targetAngle, duration = 10.0, ease = "power2.inOut") {
 }
 
 export function buildScene(scene, camera) {
-	let paper = createPaper(30,{showGrid:false});
+	// let paper = createPaper(30,{showGrid:false});
 	// showVerteces(paper);
-	scene.add(paper);
-	addPlaneCreaseLines(paper);
+	// scene.add(paper);
+	// addPlaneCreaseLines(paper);
 	// applyFold(paper, 90);
-	foldPaper(paper, 90);
+	// foldPaper(paper, 90);
+	const light = new THREE.AmbientLight( 0xffffff, 1 );
+	scene.add( light );
+
+  const loader = new GLTFLoader();
+  const url = 'cartoon_paper_boat.glb';
+
+  function onLoad(gltf) {
+    console.log(gltf.scene);
+    boat = gltf.scene;
+    boat.scale.set(20, 20, 20);
+    scene.add(boat);
+		console.log(gltf.animations);
+		let model = gltf.scene;
+		// model.scale.set(0.5,0.5,0.5);
+		mixer = new THREE.AnimationMixer(model);
+		const action = mixer.clipAction(gltf.animations[0]);
+    action.play();
+  }
+  loader.load(
+		url, 
+		onLoad,
+		(progress) => console.log('Loading:', (progress.loaded / progress.total * 100) + '%'),
+		(error) => console.error('Load error:', error)
+	);
 }
 
 export function update(camera) { 
+	if (mixer) {
+		mixer.update(clock.getDelta());
+	}
 }
 
