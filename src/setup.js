@@ -7,7 +7,7 @@ let scene, camera, renderer, controls, canvas;
 function createCamera() {
 	// PerspectiveCamera(fieldOfView, aspectRatio, near, far)
 	let camera = new THREE.PerspectiveCamera(40, canvas.width / canvas.height, 1, 500);
-	camera.position.set(0, 80, 0); 
+	camera.position.set(100, 80, 0); 
 	// Look at the center of the scene
 	camera.lookAt(0, 0, 0);
 	return camera; 

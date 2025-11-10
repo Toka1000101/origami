@@ -1,18 +1,16 @@
 import * as THREE from 'three';
-import gsap from 'gsap';
 import { GLTFLoader } from 'three/examples/jsm/Addons.js';
-// aspect ration of A4 paper is sqrRoot(2) : 1
-// which is approximatelly 1.414:1
+import { lightScene } from './light';
 let boat;
 let mixer;
 const clock = new THREE.Clock();
 
 export function buildScene(scene, camera) {
-	const light = new THREE.AmbientLight( 0xffffff, 1 );
-	scene.add( light );
+
+	lightScene(scene);
 
   const loader = new GLTFLoader();
-  const url = 'cartoon_paper_boat.glb';
+  const url = 'assets/cartoon_paper_boat.glb';
 
   function onLoad(gltf) {
     console.log(gltf.scene);
